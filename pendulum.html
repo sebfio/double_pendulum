@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="canvas" width="800" height="500">
+
+<a href="https://en.wikipedia.org/wiki/Double_pendulum">Link to double pendulum dynamics</a>
+
+</canvas>
+
+<script>
+// Canvas setup
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+ctx.fillStyle = "#000000";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+var time_delta = 25; // millis
+
+var pendulum  = function() {
+    m = 1;
+    l = 200;
+    theta   = 90;
+    x1 = 0;
+    y1 = 0;
+    x2 = x1 + l * Math.sin(this.theta);
+    y2 = y1 + l * Math.cos(this.theta);
+};
+var p1  = new pendulum();
+
+
+var pendulum2 = function() {
+    m = 1;
+    l = 300;
+    theta   = 90;
+    x1 = p1.x2;
+    y1 = p1.y2;
+    x2 = x1 + l * Math.sin(this.theta);
+    y2 = y1 + l * Math.cos(this.theta);
+}
+var p2  = new pendulum2();
+
+// Formulas for motion
+p1.p = function() {
+    return 1 / 6 * p1.m * Math.pow(p1.l, 2) * (8 * p1.dtheta +  3 * p2.dtheta * Math.cos(p1.theta - p2.theta);
+};  // Momentum
+
+p1.dtheta = function() {
+    var part1 = 6 / (p1.m * Math.pow(p1.l, 2));
+    var part2 = 2 * p1.p - 3 * Math.cos(p1.theta - p2.theta) * p2.p;
+    var part3 = 16 - 9 * Math.pow(Math.cos(p1.theta - p2.theta),2);
+
+    return part1 * part2 / part3;
+};  // Angular V
+
+p2.p = function() {
+    return 1 / 6 * p2.m * Math.pow(p2.l, 2) * (2 * p2.dtheta +  3 * p1.dtheta * Math.cos(p1.theta - p2.theta);
+};  // Momentum
+
+p2.dtheta = function() {
+    var part1 = 6 / (p2.m * Math.pow(p2.l, 2));
+    var part2 = 8 * p2.p - 3 * Math.cos(p1.theta - p2.theta) * p1.p;
+    var part3 = 16 - 9 * Math.pow(Math.cos(p1.theta - p2.theta), 2);
+
+    return part1 * part2 / part3;
+};  // Angular V
+
+
+
+// Drawing logic
+function draw_pendulum() {
+    return;
+}
+
+function runge_kutta(fn, step, a, b){
+    var k1 = step * fn(a, b);
+    var k2 = step * fn(a + step / 2, b + k1/2);
+    var k3 = step * fn(a + step / 2, b + k2/2);
+    var k4 = step * fn(a + step, b + k3);
+    
+    var new_b = b + k1 / 6 + k2 / 3 + k3 / 3 + k4 / 6;
+    return new_b;
+}
+
+// Registry of draw 25 ms
+// setInterval(draw_pendulum, time_delta);
+</script>
+
+</body>
+</html>

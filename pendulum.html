@@ -18,8 +18,8 @@ var ctx = canvas.getContext("2d");
 //ctx.fillStyle = "#ffffff";
 //ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-var time_delta = 20; 	// millis
-var g = 981;			// say ~10 pixels is 1 cm (lmao)
+var time_delta = 20;    // millis
+var g = 981;            // say ~10 pixels is 1 cm (lmao)
 
 var p1  = {
     m : 50,
@@ -28,17 +28,17 @@ var p1  = {
     p : 0,
 };
 p1.x1 = function() {
-	return canvas.width / 2;
+    return canvas.width / 2;
 };
 p1.y1 = function() {
-	// Want this way closer to the top
-	return 100;
+    // Want this way closer to the top
+    return 100;
 };
 p1.x2 = function() {
-	return this.x1() + this.l * Math.sin(this.theta);
+    return this.x1() + this.l * Math.sin(this.theta);
 };
 p1.y2 = function() {
-	return this.y1() + this.l * Math.cos(this.theta);
+    return this.y1() + this.l * Math.cos(this.theta);
 };
 
 var p2 = {
@@ -50,10 +50,10 @@ var p2 = {
 p2.x1 = function() { return p1.x2();};
 p2.y1 = function() { return p1.y2();};
 p2.x2 = function() {
-	return this.x1() + this.l * Math.sin(this.theta);
+    return this.x1() + this.l * Math.sin(this.theta);
 };
 p2.y2 = function() {
-	return this.y1() + this.l * Math.cos(this.theta);
+    return this.y1() + this.l * Math.cos(this.theta);
 };
 
 p1.dtheta = function() {
@@ -65,11 +65,11 @@ p1.dtheta = function() {
 };  // Angular V
 
 p1.dp = function() {
-	var part1 = -0.5 * p1.m * Math.pow(p1.l, 2);
-	var part2 = p1.dtheta() * p2.dtheta() * Math.sin(p1.theta - p2.theta);
-	var part3 = 3 * g / p1.l * Math.sin(p1.theta);
+    var part1 = -0.5 * p1.m * Math.pow(p1.l, 2);
+    var part2 = p1.dtheta() * p2.dtheta() * Math.sin(p1.theta - p2.theta);
+    var part3 = 3 * g / p1.l * Math.sin(p1.theta);
 
-	return part1 * (part2 + part3);
+    return part1 * (part2 + part3);
 }
 
 p2.dtheta = function() {
@@ -81,79 +81,79 @@ p2.dtheta = function() {
 };  // Angular V
 
 p2.dp = function() {
-	var part1 = -0.5 * p2.m * Math.pow(p2.l, 2);
-	var part2 = - p1.dtheta() * p2.dtheta() * Math.sin(p1.theta - p2.theta);
-	var part3 =  g / p2.l * Math.sin(p2.theta);
+    var part1 = -0.5 * p2.m * Math.pow(p2.l, 2);
+    var part2 = - p1.dtheta() * p2.dtheta() * Math.sin(p1.theta - p2.theta);
+    var part3 =  g / p2.l * Math.sin(p2.theta);
 
-	return part1 * (part2 + part3);
+    return part1 * (part2 + part3);
 };
 
 function runge_kutta(step){
-	var starting_p1 	= p1.p;
-	var starting_p2 	= p2.p;
-	var starting_theta1 = p1.theta;
-	var starting_theta2 = p2.theta;
+    var starting_p1     = p1.p;
+    var starting_p2     = p2.p;
+    var starting_theta1 = p1.theta;
+    var starting_theta2 = p2.theta;
 
-	var k1dp1 = p1.dp();
-	var k1dp2 = p2.dp();
-	var k1dt1 = p1.dtheta();
-	var k1dt2 = p2.dtheta();
+    var k1dp1 = p1.dp();
+    var k1dp2 = p2.dp();
+    var k1dt1 = p1.dtheta();
+    var k1dt2 = p2.dtheta();
 
-	p1.p 	 = starting_p1 		+ step * k1dp1 / 2;
-	p2.p 	 = starting_p2 		+ step * k1dp2 / 2;
-	p1.theta = starting_theta1 	+ step * k1dt1 / 2;
-	p2.theta = starting_theta2 	+ step * k1dt2 / 2;
+    p1.p     = starting_p1      + step * k1dp1 / 2;
+    p2.p     = starting_p2      + step * k1dp2 / 2;
+    p1.theta = starting_theta1  + step * k1dt1 / 2;
+    p2.theta = starting_theta2  + step * k1dt2 / 2;
 
-	var k2dp1 = p1.dp();
-	var k2dp2 = p2.dp();
-	var k2dt1 = p1.dtheta();
-	var k2dt2 = p2.dtheta();
-	
-	p1.p 	 = starting_p1 	   + step * k2dp1 / 2;
-	p2.p 	 = starting_p2 	   + step * k2dp2 / 2;
-	p1.theta = starting_theta1 + step * k2dt1 / 2;
-	p2.theta = starting_theta2 + step * k2dt2 / 2;
+    var k2dp1 = p1.dp();
+    var k2dp2 = p2.dp();
+    var k2dt1 = p1.dtheta();
+    var k2dt2 = p2.dtheta();
+    
+    p1.p     = starting_p1     + step * k2dp1 / 2;
+    p2.p     = starting_p2     + step * k2dp2 / 2;
+    p1.theta = starting_theta1 + step * k2dt1 / 2;
+    p2.theta = starting_theta2 + step * k2dt2 / 2;
 
-	var k3dp1 = p1.dp();
-	var k3dp2 = p2.dp();
-	var k3dt1 = p1.dtheta();
-	var k3dt2 = p2.dtheta();
+    var k3dp1 = p1.dp();
+    var k3dp2 = p2.dp();
+    var k3dt1 = p1.dtheta();
+    var k3dt2 = p2.dtheta();
 
-	p1.p 	 = starting_p1 		+ step * k3dp1;
-	p2.p 	 = starting_p2 		+ step * k3dp2;
-	p1.theta = starting_theta1 	+ step * k3dt1;
-	p2.theta = starting_theta2 	+ step * k3dt2;
+    p1.p     = starting_p1      + step * k3dp1;
+    p2.p     = starting_p2      + step * k3dp2;
+    p1.theta = starting_theta1  + step * k3dt1;
+    p2.theta = starting_theta2  + step * k3dt2;
 
-	var k4dp1 = p1.dp();
-	var k4dp2 = p2.dp();
-	var k4dt1 = p1.dtheta();
-	var k4dt2 = p2.dtheta();
+    var k4dp1 = p1.dp();
+    var k4dp2 = p2.dp();
+    var k4dt1 = p1.dtheta();
+    var k4dt2 = p2.dtheta();
 
     // Return new theta
-    return [starting_p1 	+ (k1dp1 + k2dp1 * 2 + k3dp1 * 2 + k4dp1) * step / 6,
-    		starting_p2 	+ (k1dp2 + k2dp2 * 2 + k3dp2 * 2 + k4dp2) * step / 6,
-    		starting_theta1 + (k1dt1 + k2dt1 * 2 + k3dt1 * 2 + k4dt1) * step / 6,
-    		starting_theta2 + (k1dt2 + k2dt2 * 2 + k3dt2 * 2 + k4dt2) * step / 6];
+    return [starting_p1     + (k1dp1 + k2dp1 * 2 + k3dp1 * 2 + k4dp1) * step / 6,
+            starting_p2     + (k1dp2 + k2dp2 * 2 + k3dp2 * 2 + k4dp2) * step / 6,
+            starting_theta1 + (k1dt1 + k2dt1 * 2 + k3dt1 * 2 + k4dt1) * step / 6,
+            starting_theta2 + (k1dt2 + k2dt2 * 2 + k3dt2 * 2 + k4dt2) * step / 6];
 }
 
 function compute_eoms() {
-	[np1, np2, ntheta1, ntheta2] = runge_kutta(time_delta/1000);
-	
-	p1.p 		= np1;
-	p2.p 		= np2;
-    p1.theta 	= ntheta1;
-    p2.theta 	= ntheta2;
+    [np1, np2, ntheta1, ntheta2] = runge_kutta(time_delta/1000);
+    
+    p1.p        = np1;
+    p2.p        = np2;
+    p1.theta    = ntheta1;
+    p2.theta    = ntheta2;
 }
 
 // Drawing logic
 function draw_pendulum() {
-	// Get last drawing positions
-	[l1x1, l1y1] = [p1.x1(), p1.y1()];
-	[l1x2, l1y2] = [p1.x2(), p1.y2()];
-	[l2x2, l2y2] = [p2.x2(), p2.y2()];
-	
-	// Compute new locations
-	compute_eoms();
+    // Get last drawing positions
+    [l1x1, l1y1] = [p1.x1(), p1.y1()];
+    [l1x2, l1y2] = [p1.x2(), p1.y2()];
+    [l2x2, l2y2] = [p2.x2(), p2.y2()];
+    
+    // Compute new locations
+    compute_eoms();
     
     ctx.beginPath();
 
@@ -165,7 +165,7 @@ function draw_pendulum() {
     ctx.moveTo(l1x1, l1y1);
     ctx.lineTo(l1x2, l1y2);
     ctx.lineTo(l2x2, l2y2);
-	ctx.stroke();
+    ctx.stroke();
     
 
     ctx.beginPath();
